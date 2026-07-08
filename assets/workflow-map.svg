@@ -1,44 +1,114 @@
-<svg width="1200" height="560" viewBox="0 0 1200 560" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">Chatologist workflow</title>
-  <desc id="desc">The Chatologist pipeline from exported chats to a value and automation report.</desc>
-  <rect width="1200" height="560" fill="#F8FAFC"/>
-  <text x="72" y="78" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800">From chat history to a value map</text>
-  <text x="72" y="116" fill="#475569" font-family="Inter, Arial, sans-serif" font-size="18">A local-first workflow for understanding AI usage, value, takeover, and verification burden.</text>
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Chatologist workflow map</title>
+  <desc id="desc">A precise workflow diagram showing how Chatologist turns exported AI chats into structured reports about usage, value, takeover, and verification burden.</desc>
+  <defs>
+    <filter id="cardShadow" x="-12%" y="-18%" width="124%" height="140%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0F172A" flood-opacity="0.12"/>
+    </filter>
+    <linearGradient id="line" x1="120" y1="0" x2="1480" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="0.5" stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
 
-  <g font-family="Inter, Arial, sans-serif">
-    <rect x="72" y="178" width="190" height="132" rx="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-    <text x="98" y="222" fill="#0F172A" font-size="20" font-weight="800">1. Export</text>
-    <text x="98" y="254" fill="#475569" font-size="15">OpenAI, ChatGPT,</text>
-    <text x="98" y="278" fill="#475569" font-size="15">Claude, or JSONL</text>
+  <rect width="1600" height="980" fill="#F8FAFC"/>
+  <rect x="40" y="40" width="1520" height="900" rx="42" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2"/>
 
-    <rect x="310" y="178" width="190" height="132" rx="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-    <text x="336" y="222" fill="#0F172A" font-size="20" font-weight="800">2. Normalize</text>
-    <text x="336" y="254" fill="#475569" font-size="15">Message-level CSV,</text>
-    <text x="336" y="278" fill="#475569" font-size="15">JSONL, SQLite</text>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" letter-spacing="0">
+    <text x="96" y="120" fill="#0F172A" font-size="48" font-weight="900">How Chatologist works</text>
+    <text x="98" y="164" fill="#475569" font-size="23">A local-first pipeline from AI chat exports to usage, value, takeover, and judgment evidence.</text>
 
-    <rect x="548" y="178" width="190" height="132" rx="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-    <text x="574" y="222" fill="#0F172A" font-size="20" font-weight="800">3. Lens</text>
-    <text x="574" y="254" fill="#475569" font-size="15">Education, finance,</text>
-    <text x="574" y="278" fill="#475569" font-size="15">engineering, custom</text>
+    <path d="M174 324 H1416" stroke="url(#line)" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="174" cy="324" r="17" fill="#2563EB"/>
+    <circle cx="422" cy="324" r="17" fill="#2563EB"/>
+    <circle cx="670" cy="324" r="17" fill="#14B8A6"/>
+    <circle cx="918" cy="324" r="17" fill="#14B8A6"/>
+    <circle cx="1166" cy="324" r="17" fill="#F59E0B"/>
+    <circle cx="1414" cy="324" r="17" fill="#F59E0B"/>
 
-    <rect x="786" y="178" width="190" height="132" rx="18" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-    <text x="812" y="222" fill="#0F172A" font-size="20" font-weight="800">4. Label</text>
-    <text x="812" y="254" fill="#475569" font-size="15">Sampled batches for</text>
-    <text x="812" y="278" fill="#475569" font-size="15">multi-agent review</text>
+    <g filter="url(#cardShadow)">
+      <rect x="90" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#DBEAFE" stroke-width="2"/>
+      <text x="128" y="268" fill="#1D4ED8" font-size="18" font-weight="850">01</text>
+      <text x="128" y="306" fill="#0F172A" font-size="26" font-weight="900">Export</text>
+      <text x="128" y="348" fill="#475569" font-size="17">Use files you</text>
+      <text x="128" y="374" fill="#475569" font-size="17">provide. No live</text>
+      <text x="128" y="400" fill="#475569" font-size="17">account scraping.</text>
 
-    <rect x="548" y="370" width="428" height="112" rx="18" fill="#0F172A"/>
-    <text x="582" y="414" fill="#FFFFFF" font-size="22" font-weight="800">5. Report</text>
-    <text x="582" y="448" fill="#CBD5E1" font-size="16">What are people using AI for?</text>
-    <text x="582" y="474" fill="#CBD5E1" font-size="16">What value is created? What is AI taking over?</text>
+      <rect x="338" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#DBEAFE" stroke-width="2"/>
+      <text x="376" y="268" fill="#1D4ED8" font-size="18" font-weight="850">02</text>
+      <text x="376" y="306" fill="#0F172A" font-size="26" font-weight="900">Normalize</text>
+      <text x="376" y="348" fill="#475569" font-size="17">Convert chats to</text>
+      <text x="376" y="374" fill="#475569" font-size="17">message-level CSV,</text>
+      <text x="376" y="400" fill="#475569" font-size="17">JSONL, and SQLite.</text>
 
-    <path d="M262 244 H310" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
-    <path d="M500 244 H548" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
-    <path d="M738 244 H786" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
-    <path d="M881 310 V370" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/>
+      <rect x="586" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#CCFBF1" stroke-width="2"/>
+      <text x="624" y="268" fill="#0F766E" font-size="18" font-weight="850">03</text>
+      <text x="624" y="306" fill="#0F172A" font-size="26" font-weight="900">Pick lens</text>
+      <text x="624" y="348" fill="#475569" font-size="17">Education, finance,</text>
+      <text x="624" y="374" fill="#475569" font-size="17">engineering, research,</text>
+      <text x="624" y="400" fill="#475569" font-size="17">software, or custom.</text>
 
-    <rect x="72" y="370" width="384" height="112" rx="18" fill="#ECFDF5" stroke="#99F6E4" stroke-width="2"/>
-    <text x="102" y="414" fill="#134E4A" font-size="22" font-weight="800">Privacy guardrail</text>
-    <text x="102" y="448" fill="#0F766E" font-size="16">No account scraping. Use only exports you provide.</text>
-    <text x="102" y="474" fill="#0F766E" font-size="16">Run the privacy scan before sharing evidence.</text>
+      <rect x="834" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#CCFBF1" stroke-width="2"/>
+      <text x="872" y="268" fill="#0F766E" font-size="18" font-weight="850">04</text>
+      <text x="872" y="306" fill="#0F172A" font-size="26" font-weight="900">Sample</text>
+      <text x="872" y="348" fill="#475569" font-size="17">Check 5%, 10%,</text>
+      <text x="872" y="374" fill="#475569" font-size="17">or all messages to</text>
+      <text x="872" y="400" fill="#475569" font-size="17">control cost.</text>
+
+      <rect x="1082" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#FEF3C7" stroke-width="2"/>
+      <text x="1120" y="268" fill="#B45309" font-size="18" font-weight="850">05</text>
+      <text x="1120" y="306" fill="#0F172A" font-size="26" font-weight="900">Label</text>
+      <text x="1120" y="348" fill="#475569" font-size="17">Send batches to</text>
+      <text x="1120" y="374" fill="#475569" font-size="17">model reviewers for</text>
+      <text x="1120" y="400" fill="#475569" font-size="17">message-level codes.</text>
+
+      <rect x="1330" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#FEF3C7" stroke-width="2"/>
+      <text x="1368" y="268" fill="#B45309" font-size="18" font-weight="850">06</text>
+      <text x="1368" y="306" fill="#0F172A" font-size="26" font-weight="900">Report</text>
+      <text x="1368" y="348" fill="#475569" font-size="17">Get evidence tables,</text>
+      <text x="1368" y="374" fill="#475569" font-size="17">summary stats, and</text>
+      <text x="1368" y="400" fill="#475569" font-size="17">privacy findings.</text>
+    </g>
+
+    <text x="96" y="526" fill="#0F172A" font-size="34" font-weight="900">The questions it helps answer</text>
+    <text x="98" y="562" fill="#64748B" font-size="20">The output is built around the practical questions people actually care about.</text>
+
+    <g filter="url(#cardShadow)">
+      <rect x="96" y="620" width="330" height="198" rx="28" fill="#EFF6FF"/>
+      <text x="132" y="670" fill="#1D4ED8" font-size="24" font-weight="900">Usage</text>
+      <text x="132" y="714" fill="#334155" font-size="18">What are we asking AI to do?</text>
+      <text x="132" y="748" fill="#475569" font-size="16">Tasks, domains, artifacts, roles,</text>
+      <text x="132" y="774" fill="#475569" font-size="16">and recurring workflows.</text>
+
+      <rect x="454" y="620" width="330" height="198" rx="28" fill="#ECFDF5"/>
+      <text x="490" y="670" fill="#047857" font-size="24" font-weight="900">Value</text>
+      <text x="490" y="714" fill="#334155" font-size="18">Where are we getting leverage?</text>
+      <text x="490" y="748" fill="#475569" font-size="16">Learning, speed, unblocking,</text>
+      <text x="490" y="774" fill="#475569" font-size="16">quality, and option generation.</text>
+
+      <rect x="812" y="620" width="330" height="198" rx="28" fill="#FFFBEB"/>
+      <text x="848" y="670" fill="#B45309" font-size="24" font-weight="900">Takeover</text>
+      <text x="848" y="714" fill="#334155" font-size="18">What is AI substituting for?</text>
+      <text x="848" y="748" fill="#475569" font-size="16">Drafting, coding, analysis, search,</text>
+      <text x="848" y="774" fill="#475569" font-size="16">or execution-like work.</text>
+
+      <rect x="1170" y="620" width="330" height="198" rx="28" fill="#FFF1F2"/>
+      <text x="1206" y="670" fill="#BE123C" font-size="24" font-weight="900">Human edge</text>
+      <text x="1206" y="714" fill="#334155" font-size="18">What still needs us?</text>
+      <text x="1206" y="748" fill="#475569" font-size="16">Problem framing, context, domain</text>
+      <text x="1206" y="774" fill="#475569" font-size="16">judgment, taste, and verification.</text>
+    </g>
+
+    <rect x="96" y="864" width="1404" height="52" rx="26" fill="#0F172A"/>
+    <text x="132" y="898" fill="#E2E8F0" font-size="18" font-weight="750">Local-first</text>
+    <circle cx="258" cy="890" r="4" fill="#64748B"/>
+    <text x="282" y="898" fill="#E2E8F0" font-size="18" font-weight="750">Export-based</text>
+    <circle cx="430" cy="890" r="4" fill="#64748B"/>
+    <text x="454" y="898" fill="#E2E8F0" font-size="18" font-weight="750">Sample-aware</text>
+    <circle cx="632" cy="890" r="4" fill="#64748B"/>
+    <text x="656" y="898" fill="#E2E8F0" font-size="18" font-weight="750">Multi-agent labeling ready</text>
+    <circle cx="944" cy="890" r="4" fill="#64748B"/>
+    <text x="968" y="898" fill="#E2E8F0" font-size="18" font-weight="750">Privacy scan before sharing</text>
   </g>
 </svg>

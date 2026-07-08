@@ -38,6 +38,8 @@ Use it to build a map of:
 
 ## What It Produces
 
+![Chatologist report preview](assets/report-preview.svg)
+
 - normalized message-level data: CSV, JSONL, and SQLite;
 - AI/model-selected domain pack;
 - sampled multi-agent labeling batches;
