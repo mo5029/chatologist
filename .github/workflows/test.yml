@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run unit tests
+        run: python3 -m unittest discover -s tests
+      - name: Run smoke pipeline
+        run: |
+          python3 scripts/run_pipeline.py \
+            --input examples/sample_openai_export/conversations.json \
+            --output-dir tmp/sample_student \
+            --audit-request "Audit student learning and technical problem-solving with AI" \
+            --sample-percent 100 \
+            --baseline-label

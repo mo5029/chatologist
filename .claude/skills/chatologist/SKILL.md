@@ -1,19 +1,17 @@
 ---
-name: "Chatologist"
-description: "Analyze user-provided OpenAI, Anthropic, Claude, ChatGPT, or generic LLM chat exports into audits of usage, value, automation, verification burden, learning, and human judgment. Use when users ask what they, their company, their class, or their family are using AI for; what value they derive; what AI is taking over; or how a custom domain-specific codebook should classify their chat history."
+name: "chatologist"
+description: "Analyze user-provided OpenAI, Anthropic, Claude, ChatGPT, or generic LLM chat exports into message-level audits of usage, value, automation, verification burden, learning, and human judgment. Use when the user asks to figure out what they, their company, their class, or their family are using AI for; what value they derive; what AI is taking over; or how a custom domain-specific codebook should classify their chat history."
 ---
 
 # Chatologist
 
-## What This Skill Does
+## Purpose
 
-This skill audits user-provided LLM chat exports. It normalizes messages, builds a per-user domain admin from the user's request and sampled messages, creates multi-agent labeling batches, validates labels, aggregates results, exports evidence tables, and runs privacy scans.
+Turn a user-provided LLM chat export into a structured audit: what the user asks AI to do, what domain the work belongs to, where AI substitutes or complements human work, what value is being created, what human value remains visible, and what requires verification.
 
-Do not scrape accounts. The user must provide an OpenAI/Anthropic/Claude/ChatGPT export file or extracted export directory.
+Never scrape a user's account. Require the user to provide an export ZIP, JSON, JSONL, or extracted export directory from OpenAI/ChatGPT, Anthropic/Claude, or another source.
 
 ## Quick Start
-
-From the repository root:
 
 ```bash
 python scripts/run_pipeline.py \
@@ -23,7 +21,7 @@ python scripts/run_pipeline.py \
   --sample-percent 10
 ```
 
-Smoke test:
+For a smoke test with rough baseline labels:
 
 ```bash
 python scripts/run_pipeline.py \
@@ -34,37 +32,80 @@ python scripts/run_pipeline.py \
   --baseline-label
 ```
 
-## Required Process
+Baseline labels prove the pipeline runs. They are not research-grade labels. For real analysis, generate batches, label them with model/agent reviewers, validate, aggregate, and export evidence.
 
-1. If needed, explain how to export data.
+## Required Workflow
+
+1. If the user does not already have an export, explain how to get one.
    - ChatGPT: profile menu -> `Settings` -> `Data controls` -> `Export data`.
    - Claude: web app or Claude Desktop -> initials -> `Settings` -> `Privacy` -> `Export data`.
-2. Respect `--sample-percent` and `--max-messages` to control token cost.
-3. Ingest only data the user exports and provides.
-4. Build a generated domain admin with `scripts/build_domain_admin.py` or `scripts/run_pipeline.py`.
-5. Review `setup/domain_admin.md` and refine `setup/domain_admin.json` before serious labeling.
-6. Generate batches with `scripts/make_batches.py`, passing the generated `--domain-admin`.
-7. Have one or more model/agent reviewers label each batch.
-8. Validate with `scripts/validate_labels.py`.
-9. Aggregate with `scripts/aggregate_results.py`.
-10. Export evidence with `scripts/export_evidence_table.py`.
-11. Scan outputs with `scripts/privacy_scan.py` before sharing.
+   - Never scrape live accounts or sidebars.
+2. Clarify the user's audit request and cost limit.
+   - If they specify "only check X%", pass `--sample-percent X`.
+   - If they specify a hard cap, pass `--max-messages N`.
+   - Default to a small sample first when exports are large.
+3. Ingest only user-provided data.
+   - Use `scripts/ingest_chat_export.py`.
+4. Build a user-specific domain admin.
+   - Use `scripts/build_domain_admin.py` or the one-command pipeline.
+   - Review `setup/domain_admin.md`.
+   - Edit `setup/domain_admin.json` if labels are too generic, too narrow, or missing the user's real context.
+5. Create sampled batches and labeling instructions.
+   - Use `scripts/make_batches.py`.
+   - Pass `--domain-admin setup/domain_admin.json`.
+6. Run multi-agent or multi-pass model labeling.
+   - Give reviewers `setup/domain_admin.md`, `setup/labeling_instructions.md`, and one or more `setup/batches/*.jsonl`.
+   - Require one JSON object per input message.
+7. Validate labels.
+   - Use `scripts/validate_labels.py` with `--domain-admin setup/domain_admin.json`.
+8. Aggregate results.
+   - Use `scripts/aggregate_results.py` with `--domain-admin setup/domain_admin.json`.
+9. Export an anonymized evidence table.
+   - Use `scripts/export_evidence_table.py`.
+10. Run privacy scan before sharing.
+   - Use `scripts/privacy_scan.py`.
 
-## References
+## Domain Admin Rule
 
-Use the root repository references:
+There are no bundled industry domain packs. Every audit should generate its own domain admin from the user's request and sampled messages.
 
-- `references/domain_admin_process.md`
-- `references/domain_admin_schema.md`
-- `references/workflow.md`
-- `references/schema.md`
-- `references/multi_agent_labeling.md`
-- `references/privacy.md`
+The generated admin should be treated as a draft codebook. For serious or academic work, review and refine it before full labeling.
 
-## Validity Rules
+Read these when needed:
 
-- There are no bundled domain packs; generate one admin per user and dataset.
-- Baseline labels are only for smoke tests.
-- Do not quote raw private messages in external reports.
-- Keep excluded rows in audit outputs but outside domain conclusions.
-- Treat outputs as descriptive unless the user provides a causal design.
+- Domain admin process: `references/domain_admin_process.md`
+- Domain admin schema: `references/domain_admin_schema.md`
+- Workflow details: `references/workflow.md`
+- Label schema: `references/schema.md`
+- Multi-agent labeling: `references/multi_agent_labeling.md`
+- Privacy rules: `references/privacy.md`
+- Security policy: `SECURITY.md`
+
+## Output Contract
+
+A complete audit should produce:
+
+- `normalized/messages.csv`
+- `normalized/messages.jsonl`
+- `normalized/messages.sqlite3`
+- `setup/domain_admin.json`
+- `setup/domain_admin_manifest.json`
+- `setup/domain_admin.md`
+- `setup/domain_selection.json`
+- `setup/labeling_instructions.md`
+- `setup/batches/*.jsonl`
+- `labels/*.jsonl` after model/agent labeling
+- `report/coded_messages.csv`
+- `report/summary_stats.json`
+- `report/domain_report.md`
+- `evidence/evidence_table.csv`
+- `evidence/evidence_table.md`
+- `privacy/privacy_findings.csv`
+
+## Safety And Validity
+
+- Do not quote raw private messages in public outputs.
+- Treat findings as descriptive unless the user has a real causal design.
+- Report sampling percentage prominently.
+- Keep excluded/out-of-scope messages visible in audit outputs but out of domain-specific conclusions.
+- Do not present baseline labels as academic labels.

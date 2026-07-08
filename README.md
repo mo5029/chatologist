@@ -1,40 +1,66 @@
-# Chatologist
+<p align="center">
+  <img src="assets/chatologist-logo-banner.svg" alt="Chatologist" width="720">
+</p>
 
-![Chatologist hero](assets/chatologist-hero.svg)
+<p align="center">
+  <strong>your AI chat history, turned into evidence</strong>
+</p>
 
-**Figure out what you, your company, your class, or your family are actually using AI for.**
+<p align="center">
+  Export chats. Generate a custom codebook. Label usage, value, takeover, and human judgment.<br>
+  Local-first. No scraping. No telemetry. No backend.
+</p>
 
-Chatologist turns exported AI chat histories into structured evidence about usage, value, automation, learning, verification, and human judgment. It helps answer the practical questions that are surprisingly hard to see from memory alone:
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/mo5029/chatologist?style=flat" alt="License"></a>
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/security-policy-brightgreen?style=flat" alt="Security policy"></a>
+  <a href="INSTALL.md"><img src="https://img.shields.io/badge/works_with-Codex%20%2B%20Claude%20Code-blue?style=flat" alt="Works with Codex and Claude Code"></a>
+  <a href="https://github.com/mo5029/chatologist/commits/main"><img src="https://img.shields.io/github/last-commit/mo5029/chatologist?style=flat" alt="Last commit"></a>
+</p>
 
-- What do we keep asking AI to do?
-- What value are we getting from it?
-- What is AI really taking over?
-- Where does human judgment, context, verification, and taste still matter?
-- What patterns appear when the labels are built for this specific person, team, or dataset?
+<p align="center">
+  <a href="#what-it-does">What it does</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#get-your-chat-export">Export data</a> ·
+  <a href="#run-an-audit">Run audit</a> ·
+  <a href="#security--privacy">Security</a> ·
+  <a href="#contributing">Contributing</a>
+</p>
 
-It is local-first, export-based, and designed for Codex and Claude Code workflows. No account scraping, no hidden data collection.
+---
+
+Chatologist is a local-first skill/toolkit for Codex, Claude Code, and plain Python. It turns exported ChatGPT, Claude, or generic LLM conversations into structured evidence about what AI is being used for, where value appears, what work is being delegated, and what human judgment still matters.
+
+## What it does
+
+Most people have thousands of AI conversations and almost no map of what those conversations mean. Chatologist audits the export itself.
+
+| Step | Output |
+|---|---|
+| **Export** | Use a user-provided ChatGPT, Claude, JSON, JSONL, or ZIP export. |
+| **Normalize** | Convert conversations into message-level CSV, JSONL, and SQLite. |
+| **Build domain admin** | Generate a per-user codebook from the audit request and sampled messages. |
+| **Batch** | Create sampled JSONL files for model/agent reviewers. |
+| **Validate** | Check labels against the generated domain admin. |
+| **Report** | Produce summary stats, coded messages, anonymized evidence, and privacy findings. |
 
 ![Chatologist workflow](assets/workflow-map.svg)
 
-## Why This Exists
+## Why use it
 
-Most people have thousands of conversations with AI systems, but almost no structured view of what those conversations mean. Chatologist treats those chats as a private activity log that can be audited carefully.
+- **Usage:** what tasks, workflows, and recurring requests show up?
+- **Value:** where does AI save time, teach, unblock, improve quality, or help decide?
+- **Takeover:** where is AI doing bounded work a human used to do directly?
+- **Human edge:** where do problem framing, context selection, judgment, taste, and verification still matter?
+- **Risk:** where do correctness, privacy, security, academic integrity, or professional standards need review?
 
-Use it to build a map of:
-
-- **Usage:** the tasks, domains, and recurring workflows where AI shows up.
-- **Value:** where AI saves time, teaches, unblocks, improves quality, or helps decide.
-- **Takeover:** where AI is substituting for work that used to require direct human execution.
-- **Human edge:** where problem framing, context selection, domain judgment, and verification remain the scarce resource.
-- **Risk:** where correctness, privacy, security, academic integrity, or professional judgment need review.
-
-## What Makes It Different
+## What makes it different
 
 Chatologist does **not** ship fixed industry domain packs. Every audit creates its own **domain admin**: an editable codebook generated from the user's audit request plus a controlled sample of their normalized messages.
 
-That means a student, a finance analyst, a founder, a teacher, or a research group each gets a codebook shaped around their own use case instead of being forced into generic categories.
+That means a student, founder, analyst, teacher, researcher, or team each gets labels shaped around their real context instead of being forced into generic categories.
 
-The generated domain admin lives in:
+Generated admin files:
 
 ```text
 audit_output/setup/domain_admin.json
@@ -42,31 +68,13 @@ audit_output/setup/domain_admin_manifest.json
 audit_output/setup/domain_admin.md
 ```
 
-Review `domain_admin.md` and edit `domain_admin.json` before serious labeling. The generated draft is intentionally transparent, not magical.
+Review `domain_admin.md` and edit `domain_admin.json` before serious labeling. The generated draft is transparent by design.
 
-## Who It Is For
+## Install
 
-- **Individuals:** understand what your AI habit is becoming.
-- **Families:** see how AI is being used for school, work, planning, learning, and everyday questions.
-- **Companies:** audit how teams are deriving value from AI and where governance or training should focus.
-- **Researchers:** turn chat exports into labeled evidence tables for descriptive studies.
-- **Builders:** adapt the generated domain admin and labeling schema for new contexts.
+See [INSTALL.md](INSTALL.md) for the full install and testing guide.
 
-## What It Produces
-
-![Chatologist report preview](assets/report-preview.svg)
-
-- normalized message-level data: CSV, JSONL, and SQLite;
-- generated user-specific domain admin;
-- sampled multi-agent labeling batches;
-- reviewer instructions;
-- validation report;
-- domain report;
-- coded message CSV;
-- anonymized evidence table;
-- privacy scan.
-
-## Install For Codex
+### Codex
 
 Use the repository root as a skill folder, or copy it into your Codex skills directory:
 
@@ -74,13 +82,13 @@ Use the repository root as a skill folder, or copy it into your Codex skills dir
 cp -R chatologist ~/.codex/skills/chatologist
 ```
 
-Then restart Codex and invoke it as:
+Restart Codex and invoke it as:
 
 ```text
 $chatologist
 ```
 
-## Install For Claude Code
+### Claude Code
 
 This repo includes:
 
@@ -88,9 +96,17 @@ This repo includes:
 .claude/skills/chatologist/SKILL.md
 ```
 
-Use it as a project skill by keeping `.claude/skills/chatologist` in the repo. The wrapper expects the scripts and references to remain in the repository root.
+Keep `.claude/skills/chatologist` in the repo and run commands from the repository root.
 
-## Get Your Chat Export
+### Plain Python
+
+Chatologist is stdlib-only. Python 3.10+ is enough:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+## Get your chat export
 
 Chatologist works from files you export yourself. It does not log into your account, scrape the sidebar, or read live chats.
 
@@ -106,17 +122,7 @@ Official guide: [Exporting your ChatGPT history and data](https://help.openai.co
 6. Confirm the export.
 7. Wait for the email or SMS from OpenAI, then download the ZIP while signed in to the same account.
 
-OpenAI says exports can take up to 7 days to arrive and the download link expires 24 hours after delivery. The ZIP includes chat history plus other relevant account data. Chatologist can read the ZIP directly:
-
-```bash
-python3 scripts/run_pipeline.py \
-  --input /path/to/chatgpt-export.zip \
-  --output-dir audit_output \
-  --audit-request "Audit how I use AI for my work or studies" \
-  --sample-percent 10
-```
-
-You can also unzip it and point Chatologist at the extracted folder or `conversations.json`.
+OpenAI says exports can take up to 7 days to arrive and the download link expires 24 hours after delivery. Chatologist can read the ZIP directly.
 
 ### Claude
 
@@ -131,39 +137,7 @@ Official guide: [Export your Claude data](https://support.claude.com/en/articles
 
 Claude notes that individual exports are available for Free, Pro, and Max users with active accounts. Team or Enterprise exports are handled by the organization's Primary Owner. Claude export links expire 24 hours after delivery.
 
-Use the downloaded ZIP or extracted JSON folder as `--input`:
-
-```bash
-python3 scripts/run_pipeline.py \
-  --input /path/to/claude-export.zip \
-  --output-dir audit_output \
-  --audit-request "Audit how I use AI for my work or studies" \
-  --sample-percent 10
-```
-
-## 5 Minute Smoke Test
-
-```bash
-python3 scripts/run_pipeline.py \
-  --input examples/sample_openai_export/conversations.json \
-  --output-dir tmp/sample_student \
-  --audit-request "Audit student learning and technical problem-solving with AI" \
-  --sample-percent 100 \
-  --baseline-label
-```
-
-Expected outputs:
-
-- `tmp/sample_student/setup/domain_admin.json`
-- `tmp/sample_student/setup/domain_admin.md`
-- `tmp/sample_student/setup/domain_selection.json`
-- `tmp/sample_student/setup/labeling_instructions.md`
-- `tmp/sample_student/report/domain_report.md`
-- `tmp/sample_student/evidence/evidence_table.md`
-
-`--baseline-label` is only for smoke tests. It proves the pipeline runs, but it is not research-grade labeling.
-
-## Real Audit
+## Run an audit
 
 Start with a small sample to control cost:
 
@@ -186,13 +160,13 @@ audit_output/setup/labeling_instructions.md
 
 Before full labeling, open `audit_output/setup/domain_admin.md`. If the labels are too generic, edit `audit_output/setup/domain_admin.json` and rerun batching.
 
-For higher-quality results, send the batch files and the instructions to one or more model/agent reviewers. Save returned JSONL labels in:
+For higher-quality results, send the batch files and instructions to one or more model/agent reviewers. Save returned JSONL labels in:
 
 ```text
 audit_output/labels/
 ```
 
-Use the generated domain ID from `audit_output/setup/domain_selection.json` for validation and aggregation:
+Then validate and aggregate:
 
 ```bash
 DOMAIN_ID=$(python3 - <<'PY'
@@ -222,7 +196,28 @@ python3 scripts/privacy_scan.py \
   --output-dir audit_output/privacy
 ```
 
-## Output Layout
+## 5 minute smoke test
+
+```bash
+python3 scripts/run_pipeline.py \
+  --input examples/sample_openai_export/conversations.json \
+  --output-dir tmp/sample_student \
+  --audit-request "Audit student learning and technical problem-solving with AI" \
+  --sample-percent 100 \
+  --baseline-label
+```
+
+Expected outputs:
+
+- `tmp/sample_student/setup/domain_admin.json`
+- `tmp/sample_student/setup/domain_admin.md`
+- `tmp/sample_student/setup/labeling_instructions.md`
+- `tmp/sample_student/report/domain_report.md`
+- `tmp/sample_student/evidence/evidence_table.md`
+
+`--baseline-label` proves the pipeline runs. It is not research-grade labeling.
+
+## Output layout
 
 ```text
 audit_output/
@@ -244,36 +239,34 @@ audit_output/
 └── privacy/
 ```
 
-## Important Rules
+## Security & privacy
+
+Chatologist has no telemetry, no backend, and no account login flow. Runtime scripts read local files and write local outputs. Nothing is uploaded by Chatologist.
+
+Important rules:
 
 - Use only exports the user provides.
 - Do not scrape live accounts.
-- Generate a domain admin for each user and dataset.
-- Review the generated domain admin before serious labeling.
-- Report the sample percentage.
-- Keep out-of-scope messages visible in audit files but outside domain conclusions.
+- Do not commit private exports, `audit_output/`, `raw_exports/`, or `private_exports/`.
+- Run `scripts/privacy_scan.py` before sharing evidence tables or reports.
 - Do not quote raw private messages in public reports.
-- Treat findings as descriptive unless you have a real causal design.
-- Run the privacy scan before sharing evidence tables or reports.
+
+Read [SECURITY.md](SECURITY.md) for the full security and privacy model.
 
 ## References
 
+- [Install guide](INSTALL.md)
 - [Domain admin process](references/domain_admin_process.md)
 - [Domain admin schema](references/domain_admin_schema.md)
 - [Workflow](references/workflow.md)
 - [Label schema](references/schema.md)
 - [Multi-agent labeling](references/multi_agent_labeling.md)
 - [Privacy rules](references/privacy.md)
+- [Friend testing](FRIEND_TESTING.md)
 
-## Test
+## Contributing
 
-```bash
-python3 -m unittest discover -s tests
-```
-
-## Friend Testing
-
-See [FRIEND_TESTING.md](FRIEND_TESTING.md) for a short checklist to send to early testers.
+Contributions are welcome, especially around import formats, label quality, documentation, and privacy hardening. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) first.
 
 ## License
 

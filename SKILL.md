@@ -79,6 +79,7 @@ Read these when needed:
 - Label schema: `references/schema.md`
 - Multi-agent labeling: `references/multi_agent_labeling.md`
 - Privacy rules: `references/privacy.md`
+- Security policy: `SECURITY.md`
 
 ## Output Contract
 
@@ -106,5 +107,5 @@ A complete audit should produce:
 - Do not quote raw private messages in public outputs.
 - Treat findings as descriptive unless the user has a real causal design.
 - Report sampling percentage prominently.
-- Keep excluded/out-of-scope messages visible in audit files but out of domain-specific conclusions.
+- Keep excluded/out-of-scope messages visible in audit outputs but out of domain-specific conclusions.
 - Do not present baseline labels as academic labels.
