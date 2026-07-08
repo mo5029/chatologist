@@ -38,10 +38,14 @@ class PipelineTests(unittest.TestCase):
                 ]
             )
             self.assertTrue((out / "normalized/messages.csv").exists())
+            self.assertTrue((out / "setup/domain_admin.json").exists())
+            self.assertTrue((out / "setup/domain_admin.md").exists())
             self.assertTrue((out / "setup/labeling_instructions.md").exists())
             self.assertTrue((out / "report/domain_report.md").exists())
             manifest = json.loads((out / "pipeline_manifest.json").read_text())
-            self.assertEqual(manifest["selected_domain_pack"], "engineering")
+            domain_admin = json.loads((out / "setup/domain_admin.json").read_text())
+            self.assertIn(manifest["selected_domain_pack"], domain_admin)
+            self.assertTrue(json.loads((out / "setup/domain_selection.json").read_text())["generated"])
             with (out / "report/coded_messages.csv").open() as fh:
                 rows = list(csv.DictReader(fh))
             self.assertGreaterEqual(len(rows), 3)
@@ -67,7 +71,8 @@ class PipelineTests(unittest.TestCase):
                 ]
             )
             manifest = json.loads((out / "pipeline_manifest.json").read_text())
-            self.assertEqual(manifest["selected_domain_pack"], "finance")
+            domain_admin = json.loads((out / "setup/domain_admin.json").read_text())
+            self.assertIn(manifest["selected_domain_pack"], domain_admin)
             self.assertTrue((out / "evidence/evidence_table.md").exists())
 
     def test_sampling_cap(self):
@@ -87,13 +92,29 @@ class PipelineTests(unittest.TestCase):
             self.run_cmd(
                 [
                     sys.executable,
+                    "scripts/build_domain_admin.py",
+                    "--messages-csv",
+                    str(norm / "messages.csv"),
+                    "--output-dir",
+                    str(setup),
+                    "--audit-request",
+                    "Audit engineering work",
+                    "--domain-id",
+                    "engineering-work",
+                ]
+            )
+            self.run_cmd(
+                [
+                    sys.executable,
                     "scripts/make_batches.py",
                     "--messages-csv",
                     str(norm / "messages.csv"),
                     "--output-dir",
                     str(setup),
                     "--domain",
-                    "engineering",
+                    "engineering-work",
+                    "--domain-admin",
+                    str(setup / "domain_admin.json"),
                     "--user-audit-request",
                     "Audit engineering work",
                     "--sample-percent",

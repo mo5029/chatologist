@@ -44,10 +44,10 @@
 
       <rect x="586" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#CCFBF1" stroke-width="2"/>
       <text x="624" y="268" fill="#0F766E" font-size="18" font-weight="850">03</text>
-      <text x="624" y="306" fill="#0F172A" font-size="26" font-weight="900">Pick lens</text>
-      <text x="624" y="348" fill="#475569" font-size="17">Education, finance,</text>
-      <text x="624" y="374" fill="#475569" font-size="17">engineering, research,</text>
-      <text x="624" y="400" fill="#475569" font-size="17">software, or custom.</text>
+      <text x="624" y="306" fill="#0F172A" font-size="26" font-weight="900">Build admin</text>
+      <text x="624" y="348" fill="#475569" font-size="17">Generate a user</text>
+      <text x="624" y="374" fill="#475569" font-size="17">specific codebook</text>
+      <text x="624" y="400" fill="#475569" font-size="17">from sampled chats.</text>
 
       <rect x="834" y="220" width="220" height="206" rx="26" fill="#FFFFFF" stroke="#CCFBF1" stroke-width="2"/>
       <text x="872" y="268" fill="#0F766E" font-size="18" font-weight="850">04</text>

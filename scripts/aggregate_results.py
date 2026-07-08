@@ -14,13 +14,14 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Aggregate label rows into report outputs.")
     parser.add_argument("--labels", required=True)
     parser.add_argument("--domain", required=True)
+    parser.add_argument("--domain-admin", help="Generated domain_admin.json for this audit.")
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--allow-invalid", action="store_true", help="Aggregate even if validation errors exist.")
     args = parser.parse_args()
 
-    packs = load_domain_packs()
+    packs = load_domain_packs(Path(args.domain_admin) if args.domain_admin else None)
     if args.domain not in packs:
-        raise SystemExit(f"Unknown domain pack: {args.domain}")
+        raise SystemExit(f"Unknown domain admin ID: {args.domain}")
     rows = []
     for file in iter_jsonl_files(Path(args.labels)):
         rows.extend(read_jsonl(file))

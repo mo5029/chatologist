@@ -1,6 +1,6 @@
 ---
 name: "chatologist"
-description: "Analyze user-provided OpenAI, Anthropic, Claude, ChatGPT, or generic LLM chat exports into message-level audits of usage, value, automation, verification burden, and human judgment. Use when the user asks to figure out what they, their company, or their family are using AI for; what value they are deriving; what AI is taking over; or how AI use differs across finance, education, engineering, research, software, or custom domains."
+description: "Analyze user-provided OpenAI, Anthropic, Claude, ChatGPT, or generic LLM chat exports into message-level audits of usage, value, automation, verification burden, learning, and human judgment. Use when the user asks to figure out what they, their company, their class, or their family are using AI for; what value they derive; what AI is taking over; or how a custom domain-specific codebook should classify their chat history."
 ---
 
 # Chatologist
@@ -17,8 +17,7 @@ Never scrape a user's account. Require the user to provide an export ZIP, JSON, 
 python scripts/run_pipeline.py \
   --input /path/to/export.zip \
   --output-dir audit_output \
-  --audit-request "Audit how I use AI for finance work" \
-  --domain auto \
+  --audit-request "Audit how I use AI for my work or studies" \
   --sample-percent 10
 ```
 
@@ -27,9 +26,8 @@ For a smoke test with rough baseline labels:
 ```bash
 python scripts/run_pipeline.py \
   --input examples/sample_openai_export/conversations.json \
-  --output-dir tmp/sample_engineering \
-  --audit-request "Audit engineering student AI use" \
-  --domain auto \
+  --output-dir tmp/sample_student \
+  --audit-request "Audit student learning and technical problem-solving with AI" \
   --sample-percent 100 \
   --baseline-label
 ```
@@ -42,38 +40,41 @@ Baseline labels prove the pipeline runs. They are not research-grade labels. For
    - If they specify "only check X%", pass `--sample-percent X`.
    - If they specify a hard cap, pass `--max-messages N`.
    - Default to a small sample first when exports are large.
-2. Select the domain pack using the active AI model's judgment from the user's request.
-   - Use `engineering`, `finance`, `education`, `research`, `software`, or `general-work` when appropriate.
-   - If none fit, create a custom domain pack before batching.
-   - `scripts/select_domain_pack.py` is a fallback suggestion, not the final authority.
-3. Ingest only user-provided data.
+2. Ingest only user-provided data.
    - Use `scripts/ingest_chat_export.py`.
+3. Build a user-specific domain admin.
+   - Use `scripts/build_domain_admin.py` or the one-command pipeline.
+   - Review `setup/domain_admin.md`.
+   - Edit `setup/domain_admin.json` if labels are too generic, too narrow, or missing the user's real context.
 4. Create sampled batches and labeling instructions.
    - Use `scripts/make_batches.py`.
+   - Pass `--domain-admin setup/domain_admin.json`.
 5. Run multi-agent or multi-pass model labeling.
-   - Give reviewers `setup/labeling_instructions.md` and one or more `setup/batches/*.jsonl`.
+   - Give reviewers `setup/domain_admin.md`, `setup/labeling_instructions.md`, and one or more `setup/batches/*.jsonl`.
    - Require one JSON object per input message.
 6. Validate labels.
-   - Use `scripts/validate_labels.py`.
+   - Use `scripts/validate_labels.py` with `--domain-admin setup/domain_admin.json`.
 7. Aggregate results.
-   - Use `scripts/aggregate_results.py`.
+   - Use `scripts/aggregate_results.py` with `--domain-admin setup/domain_admin.json`.
 8. Export an anonymized evidence table.
    - Use `scripts/export_evidence_table.py`.
 9. Run privacy scan before sharing.
    - Use `scripts/privacy_scan.py`.
 
-## Domain Pack Rule
+## Domain Admin Rule
 
-The user's AI model and the user's request determine the domain pack. Do not force a fixed domain from keywords alone. Use keyword selection only as a fallback.
+There are no bundled industry domain packs. Every audit should generate its own domain admin from the user's request and sampled messages.
+
+The generated admin should be treated as a draft codebook. For serious or academic work, review and refine it before full labeling.
 
 Read these when needed:
 
-- Domain selection: `references/domain_selection.md`
+- Domain admin process: `references/domain_admin_process.md`
+- Domain admin schema: `references/domain_admin_schema.md`
 - Workflow details: `references/workflow.md`
 - Label schema: `references/schema.md`
 - Multi-agent labeling: `references/multi_agent_labeling.md`
 - Privacy rules: `references/privacy.md`
-- Domain definitions: `references/domains/`
 
 ## Output Contract
 
@@ -82,6 +83,9 @@ A complete audit should produce:
 - `normalized/messages.csv`
 - `normalized/messages.jsonl`
 - `normalized/messages.sqlite3`
+- `setup/domain_admin.json`
+- `setup/domain_admin_manifest.json`
+- `setup/domain_admin.md`
 - `setup/domain_selection.json`
 - `setup/labeling_instructions.md`
 - `setup/batches/*.jsonl`

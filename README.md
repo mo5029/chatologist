@@ -2,15 +2,15 @@
 
 ![Chatologist hero](assets/chatologist-hero.svg)
 
-**Figure out what you, your company, or your family are actually using AI for.**
+**Figure out what you, your company, your class, or your family are actually using AI for.**
 
-Chatologist turns exported AI chat histories into structured evidence about usage, value, automation, and human judgment. It helps answer the practical questions that are surprisingly hard to see from memory alone:
+Chatologist turns exported AI chat histories into structured evidence about usage, value, automation, learning, verification, and human judgment. It helps answer the practical questions that are surprisingly hard to see from memory alone:
 
 - What do we keep asking AI to do?
 - What value are we getting from it?
 - What is AI really taking over?
 - Where does human judgment, context, verification, and taste still matter?
-- How does usage differ across engineering, education, finance, research, software, or a custom domain?
+- What patterns appear when the labels are built for this specific person, team, or dataset?
 
 It is local-first, export-based, and designed for Codex and Claude Code workflows. No account scraping, no hidden data collection.
 
@@ -28,20 +28,36 @@ Use it to build a map of:
 - **Human edge:** where problem framing, context selection, domain judgment, and verification remain the scarce resource.
 - **Risk:** where correctness, privacy, security, academic integrity, or professional judgment need review.
 
+## What Makes It Different
+
+Chatologist does **not** ship fixed industry domain packs. Every audit creates its own **domain admin**: an editable codebook generated from the user's audit request plus a controlled sample of their normalized messages.
+
+That means a student, a finance analyst, a founder, a teacher, or a research group each gets a codebook shaped around their own use case instead of being forced into generic categories.
+
+The generated domain admin lives in:
+
+```text
+audit_output/setup/domain_admin.json
+audit_output/setup/domain_admin_manifest.json
+audit_output/setup/domain_admin.md
+```
+
+Review `domain_admin.md` and edit `domain_admin.json` before serious labeling. The generated draft is intentionally transparent, not magical.
+
 ## Who It Is For
 
 - **Individuals:** understand what your AI habit is becoming.
 - **Families:** see how AI is being used for school, work, planning, learning, and everyday questions.
 - **Companies:** audit how teams are deriving value from AI and where governance or training should focus.
 - **Researchers:** turn chat exports into labeled evidence tables for descriptive studies.
-- **Builders:** adapt the domain packs and labeling schema for new industries.
+- **Builders:** adapt the generated domain admin and labeling schema for new contexts.
 
 ## What It Produces
 
 ![Chatologist report preview](assets/report-preview.svg)
 
 - normalized message-level data: CSV, JSONL, and SQLite;
-- AI/model-selected domain pack;
+- generated user-specific domain admin;
 - sampled multi-agent labeling batches;
 - reviewer instructions;
 - validation report;
@@ -49,17 +65,6 @@ Use it to build a map of:
 - coded message CSV;
 - anonymized evidence table;
 - privacy scan.
-
-## Built-In Domain Packs
-
-- `engineering`
-- `education`
-- `finance`
-- `research`
-- `software`
-- `general-work`
-
-The active AI model can also create a custom pack by editing `references/domain_packs.json`.
 
 ## Install For Codex
 
@@ -90,19 +95,20 @@ Use it as a project skill by keeping `.claude/skills/chatologist` in the repo. T
 ```bash
 python3 scripts/run_pipeline.py \
   --input examples/sample_openai_export/conversations.json \
-  --output-dir tmp/sample_education \
-  --audit-request "Audit education and student learning use" \
-  --domain auto \
+  --output-dir tmp/sample_student \
+  --audit-request "Audit student learning and technical problem-solving with AI" \
   --sample-percent 100 \
   --baseline-label
 ```
 
 Expected outputs:
 
-- `tmp/sample_education/setup/domain_selection.json`
-- `tmp/sample_education/setup/labeling_instructions.md`
-- `tmp/sample_education/report/domain_report.md`
-- `tmp/sample_education/evidence/evidence_table.md`
+- `tmp/sample_student/setup/domain_admin.json`
+- `tmp/sample_student/setup/domain_admin.md`
+- `tmp/sample_student/setup/domain_selection.json`
+- `tmp/sample_student/setup/labeling_instructions.md`
+- `tmp/sample_student/report/domain_report.md`
+- `tmp/sample_student/evidence/evidence_table.md`
 
 `--baseline-label` is only for smoke tests. It proves the pipeline runs, but it is not research-grade labeling.
 
@@ -115,34 +121,45 @@ python3 scripts/run_pipeline.py \
   --input /path/to/openai-or-claude-export.zip \
   --output-dir audit_output \
   --audit-request "Figure out what my company is using AI for, what value we get, and what work AI is taking over" \
-  --domain auto \
   --sample-percent 10
 ```
 
-This creates sampled batches:
+This creates:
 
 ```text
+audit_output/setup/domain_admin.json
+audit_output/setup/domain_admin.md
 audit_output/setup/batches/*.jsonl
 audit_output/setup/labeling_instructions.md
 ```
 
-For higher-quality results, send those batch files and the instructions to one or more model/agent reviewers. Save returned JSONL labels in:
+Before full labeling, open `audit_output/setup/domain_admin.md`. If the labels are too generic, edit `audit_output/setup/domain_admin.json` and rerun batching.
+
+For higher-quality results, send the batch files and the instructions to one or more model/agent reviewers. Save returned JSONL labels in:
 
 ```text
 audit_output/labels/
 ```
 
-Then validate and aggregate:
+Use the generated domain ID from `audit_output/setup/domain_selection.json` for validation and aggregation:
 
 ```bash
+DOMAIN_ID=$(python3 - <<'PY'
+import json
+print(json.load(open("audit_output/setup/domain_selection.json"))["selected_domain_pack"])
+PY
+)
+
 python3 scripts/validate_labels.py \
   --labels audit_output/labels \
-  --domain education \
+  --domain "$DOMAIN_ID" \
+  --domain-admin audit_output/setup/domain_admin.json \
   --output audit_output/report/label_validation.json
 
 python3 scripts/aggregate_results.py \
   --labels audit_output/labels \
-  --domain education \
+  --domain "$DOMAIN_ID" \
+  --domain-admin audit_output/setup/domain_admin.json \
   --output-dir audit_output/report
 
 python3 scripts/export_evidence_table.py \
@@ -154,8 +171,6 @@ python3 scripts/privacy_scan.py \
   --output-dir audit_output/privacy
 ```
 
-Use the selected domain from `audit_output/setup/domain_selection.json` when running the validation and aggregation commands.
-
 ## Output Layout
 
 ```text
@@ -165,6 +180,9 @@ audit_output/
 │   ├── messages.jsonl
 │   └── messages.sqlite3
 ├── setup/
+│   ├── domain_admin.json
+│   ├── domain_admin_manifest.json
+│   ├── domain_admin.md
 │   ├── domain_selection.json
 │   ├── labeling_instructions.md
 │   ├── batch_manifest.json
@@ -179,11 +197,22 @@ audit_output/
 
 - Use only exports the user provides.
 - Do not scrape live accounts.
+- Generate a domain admin for each user and dataset.
+- Review the generated domain admin before serious labeling.
 - Report the sample percentage.
 - Keep out-of-scope messages visible in audit files but outside domain conclusions.
 - Do not quote raw private messages in public reports.
 - Treat findings as descriptive unless you have a real causal design.
 - Run the privacy scan before sharing evidence tables or reports.
+
+## References
+
+- [Domain admin process](references/domain_admin_process.md)
+- [Domain admin schema](references/domain_admin_schema.md)
+- [Workflow](references/workflow.md)
+- [Label schema](references/schema.md)
+- [Multi-agent labeling](references/multi_agent_labeling.md)
+- [Privacy rules](references/privacy.md)
 
 ## Test
 

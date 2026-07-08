@@ -18,12 +18,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Create baseline labels for batches.")
     parser.add_argument("--batches", required=True, help="Batch JSONL file or batch directory.")
     parser.add_argument("--domain", required=True)
+    parser.add_argument("--domain-admin", help="Generated domain_admin.json for this audit.")
     parser.add_argument("--output-dir", required=True)
     args = parser.parse_args()
 
-    packs = load_domain_packs()
+    packs = load_domain_packs(Path(args.domain_admin) if args.domain_admin else None)
     if args.domain not in packs:
-        raise SystemExit(f"Unknown domain pack: {args.domain}")
+        raise SystemExit(f"Unknown domain admin ID: {args.domain}")
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     total = 0

@@ -21,6 +21,7 @@ def main() -> int:
     parser.add_argument("--messages-csv", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--domain", required=True)
+    parser.add_argument("--domain-admin", help="Generated domain_admin.json for this audit.")
     parser.add_argument("--user-audit-request", dest="user_audit_request", default="")
     parser.add_argument("--user-prompt", dest="user_audit_request", help=argparse.SUPPRESS)
     parser.add_argument("--user-audit-request-file", dest="user_audit_request_file")
@@ -31,9 +32,9 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=7)
     args = parser.parse_args()
 
-    packs = load_domain_packs()
+    packs = load_domain_packs(Path(args.domain_admin) if args.domain_admin else None)
     if args.domain not in packs:
-        raise SystemExit(f"Unknown domain pack: {args.domain}")
+        raise SystemExit(f"Unknown domain admin ID: {args.domain}")
     user_request = Path(args.user_audit_request_file).read_text(encoding="utf-8") if args.user_audit_request_file else args.user_audit_request
     rows = read_messages_csv(Path(args.messages_csv))
     sampled = sample_messages(rows, args.sample_percent, args.max_messages, args.seed)
@@ -45,6 +46,7 @@ def main() -> int:
     manifest = {
         "source_messages_csv": str(Path(args.messages_csv)),
         "domain": args.domain,
+        "domain_admin": args.domain_admin,
         "sample_percent": args.sample_percent,
         "max_messages": args.max_messages,
         "batch_size": args.batch_size,

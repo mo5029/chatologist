@@ -1,13 +1,13 @@
 ---
 name: "Chatologist"
-description: "Analyze user-provided OpenAI, Anthropic, Claude, ChatGPT, or generic LLM chat exports into audits of usage, value, automation, verification burden, and human judgment. Use when users ask what they, their company, or their family are using AI for; what value they derive; what AI is taking over; or how usage differs across finance, education, engineering, research, software, or custom domains."
+description: "Analyze user-provided OpenAI, Anthropic, Claude, ChatGPT, or generic LLM chat exports into audits of usage, value, automation, verification burden, learning, and human judgment. Use when users ask what they, their company, their class, or their family are using AI for; what value they derive; what AI is taking over; or how a custom domain-specific codebook should classify their chat history."
 ---
 
 # Chatologist
 
 ## What This Skill Does
 
-This skill audits user-provided LLM chat exports. It normalizes messages, selects or creates a domain pack from the user's request, samples only the requested percentage when cost matters, creates multi-agent labeling batches, validates labels, aggregates results, exports evidence tables, and runs privacy scans.
+This skill audits user-provided LLM chat exports. It normalizes messages, builds a per-user domain admin from the user's request and sampled messages, creates multi-agent labeling batches, validates labels, aggregates results, exports evidence tables, and runs privacy scans.
 
 Do not scrape accounts. The user must provide an OpenAI/Anthropic/Claude/ChatGPT export file or extracted export directory.
 
@@ -19,8 +19,7 @@ From the repository root:
 python scripts/run_pipeline.py \
   --input /path/to/export.zip \
   --output-dir audit_output \
-  --audit-request "Audit how I use AI in education work" \
-  --domain auto \
+  --audit-request "Audit how I use AI for my work or studies" \
   --sample-percent 10
 ```
 
@@ -28,38 +27,40 @@ Smoke test:
 
 ```bash
 python scripts/run_pipeline.py \
-  --input examples/sample_claude_export/conversations.json \
-  --output-dir tmp/sample_finance \
-  --audit-request "Audit finance work and verification burden" \
-  --domain auto \
+  --input examples/sample_openai_export/conversations.json \
+  --output-dir tmp/sample_student \
+  --audit-request "Audit student learning and technical problem-solving with AI" \
+  --sample-percent 100 \
   --baseline-label
 ```
 
 ## Required Process
 
-1. Use the user's request and the active AI model's judgment to select the domain pack.
-2. Respect `--sample-percent` and `--max-messages` to control token cost.
-3. Ingest only data the user exports and provides.
-4. Generate batches with `scripts/make_batches.py`.
-5. Have one or more model/agent reviewers label each batch.
-6. Validate with `scripts/validate_labels.py`.
-7. Aggregate with `scripts/aggregate_results.py`.
-8. Export evidence with `scripts/export_evidence_table.py`.
-9. Scan outputs with `scripts/privacy_scan.py` before sharing.
+1. Respect `--sample-percent` and `--max-messages` to control token cost.
+2. Ingest only data the user exports and provides.
+3. Build a generated domain admin with `scripts/build_domain_admin.py` or `scripts/run_pipeline.py`.
+4. Review `setup/domain_admin.md` and refine `setup/domain_admin.json` before serious labeling.
+5. Generate batches with `scripts/make_batches.py`, passing the generated `--domain-admin`.
+6. Have one or more model/agent reviewers label each batch.
+7. Validate with `scripts/validate_labels.py`.
+8. Aggregate with `scripts/aggregate_results.py`.
+9. Export evidence with `scripts/export_evidence_table.py`.
+10. Scan outputs with `scripts/privacy_scan.py` before sharing.
 
 ## References
 
 Use the root repository references:
 
+- `references/domain_admin_process.md`
+- `references/domain_admin_schema.md`
 - `references/workflow.md`
-- `references/domain_selection.md`
 - `references/schema.md`
 - `references/multi_agent_labeling.md`
 - `references/privacy.md`
-- `references/domains/`
 
 ## Validity Rules
 
+- There are no bundled domain packs; generate one admin per user and dataset.
 - Baseline labels are only for smoke tests.
 - Do not quote raw private messages in external reports.
 - Keep excluded rows in audit outputs but outside domain conclusions.

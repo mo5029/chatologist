@@ -23,7 +23,7 @@ from typing import Any, Iterable
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DOMAIN_PACKS_JSON = ROOT / "references" / "domain_packs.json"
+DOMAIN_ADMIN_TEMPLATE_JSON = ROOT / "references" / "domain_admin_template.json"
 
 
 BASE_LABEL_FIELDS = [
@@ -294,37 +294,302 @@ def read_messages_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(fh))
 
 
-def load_domain_packs(path: Path = DOMAIN_PACKS_JSON) -> dict[str, Any]:
-    with Path(path).open("r", encoding="utf-8") as fh:
+def load_domain_packs(path: Path | None = None) -> dict[str, Any]:
+    """Load a generated domain admin JSON file.
+
+    The public workflow builds a per-user domain admin in `setup/domain_admin.json`.
+    A small template remains in `references/domain_admin_template.json` only as a
+    schema/default fallback; it is not a built-in domain library.
+    """
+    path = Path(path) if path else DOMAIN_ADMIN_TEMPLATE_JSON
+    with path.open("r", encoding="utf-8") as fh:
         return json.load(fh)
 
 
-def select_domain_pack(user_request: str, model_hint: str = "", packs: dict[str, Any] | None = None) -> tuple[str, dict[str, float]]:
-    """Deterministic fallback. Agents should override using judgment when needed."""
-    packs = packs or load_domain_packs()
-    haystack = f"{user_request} {model_hint}".lower()
-    scores: dict[str, float] = {}
-    for name, pack in packs.items():
-        score = 0.0
-        if re.search(rf"\b{re.escape(name.replace('-', ' '))}\b", haystack):
-            score += 3.0
-        if re.search(rf"\b{re.escape(name)}\b", haystack):
-            score += 3.0
-        for keyword in pack.get("selection_keywords", []):
-            if keyword.lower() in haystack:
-                score += 2.0 if " " in keyword else 1.0
-        for label in pack.get("task_types", []):
-            token = label.lower().replace("_", " ")
-            if token in haystack:
-                score += 0.5
-        scores[name] = score
-    non_general = {name: score for name, score in scores.items() if name != "general-work"}
-    best = max(non_general.items(), key=lambda kv: (kv[1], kv[0]))[0] if non_general else "general-work"
-    if scores.get("general-work", 0.0) > scores.get(best, 0.0):
-        best = "general-work"
-    if scores.get(best, 0.0) <= 0 and "general-work" in packs:
-        best = "general-work"
-    return best, scores
+DOMAIN_STOPWORDS = {
+    "about", "above", "after", "again", "against", "also", "and", "are", "audit", "because",
+    "before", "being", "between", "build", "can", "chat", "chats", "check", "company", "could",
+    "derive", "derived", "does", "doing", "domain", "each", "export", "family", "figure", "for",
+    "from", "had", "has", "have", "history", "how", "into", "make", "message", "messages", "model",
+    "more", "not", "off", "our", "out", "over", "really", "report", "request", "should", "than",
+    "that", "the", "their", "them", "there", "these", "things", "this", "through", "use", "used",
+    "using", "value", "was", "what", "when", "where", "which", "while", "who", "why", "with", "work",
+    "would", "you", "your", "youre", "user", "users", "usage",
+}
+
+
+def clean_token(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
+def extract_terms(texts: Iterable[str], limit: int = 18) -> list[str]:
+    counter: Counter[str] = Counter()
+    for text in texts:
+        for token in re.findall(r"[A-Za-z][A-Za-z0-9_+-]{2,}", text.lower()):
+            token = clean_token(token)
+            if len(token) < 3 or token in DOMAIN_STOPWORDS:
+                continue
+            if token.isdigit():
+                continue
+            counter[token] += 1
+    return [term for term, _ in counter.most_common(limit)]
+
+
+def label_from_text(value: str, suffix: str = "") -> str:
+    words = [clean_token(w) for w in re.findall(r"[A-Za-z][A-Za-z0-9_+-]{2,}", value)]
+    words = [w for w in words if w and w not in DOMAIN_STOPWORDS]
+    label = "_".join(words[:4]).upper()
+    if suffix and label and not label.endswith(suffix):
+        label = f"{label}_{suffix}"
+    return label or f"CUSTOM_{suffix or 'LABEL'}"
+
+
+def unique_values(values: Iterable[str], fallback: list[str]) -> list[str]:
+    out: list[str] = []
+    for value in values:
+        clean = str(value).strip().upper().replace("-", "_").replace(" ", "_")
+        clean = re.sub(r"[^A-Z0-9_]+", "", clean)
+        if clean and clean not in out:
+            out.append(clean)
+    for value in fallback:
+        if value not in out:
+            out.append(value)
+    return out
+
+
+def build_generated_domain_admin(
+    user_request: str,
+    sampled_rows: list[dict[str, str]],
+    domain_id: str | None = None,
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    """Create a per-user domain admin from the user's request and sample rows.
+
+    This is a deterministic draft. Research-grade use should have a model or
+    human reviewer inspect and refine `domain_admin.json` before full labeling.
+    """
+    request_terms = extract_terms([user_request], limit=8)
+    if request_terms:
+        relevant_conversations = set()
+        for row in sampled_rows:
+            haystack = f"{row.get('conversation_title', '')} {row.get('text', '')}".lower()
+            if any(term in haystack for term in request_terms):
+                relevant_conversations.add(row.get("conversation_id", ""))
+        relevant_rows = [row for row in sampled_rows if row.get("conversation_id", "") in relevant_conversations] or sampled_rows
+    else:
+        relevant_rows = sampled_rows
+    title_texts = [row.get("conversation_title", "") for row in relevant_rows]
+    message_texts = [row.get("text", "") for row in relevant_rows]
+    sample_terms = extract_terms([*title_texts, *message_texts], limit=18)
+    terms = list(dict.fromkeys([*request_terms, *sample_terms]))[:18]
+    domain_id = slug(domain_id or " ".join(extract_terms([user_request], limit=5)) or "user-domain", "user-domain")
+    work_seed_terms = request_terms[:6] or sample_terms[:6]
+    topic_labels = [label_from_text(term, "WORK") for term in work_seed_terms]
+    request_label = label_from_text(user_request, "FOCUS")
+
+    pack = {
+        "description": (
+            f"Generated domain admin for this audit request: {user_request.strip() or 'user-provided AI chat export'}"
+        ),
+        "selection_keywords": terms[:16] or ["custom", "audit", "chat"],
+        "exclusion_labels": [
+            "PERSONAL_ADMIN",
+            "HEALTH_MEDICAL",
+            "LEGAL_OR_FINANCIAL_SENSITIVE",
+            "CREATIVE_LEISURE",
+            "TRAVEL_LOGISTICS",
+            "ACCOUNT_META",
+            "OTHER_OUT_OF_SCOPE",
+            "INSUFFICIENT_CONTEXT",
+        ],
+        "work_domains": unique_values(
+            [request_label, *topic_labels],
+            ["PRIMARY_WORK", "ADJACENT_WORK", "LEARNING_OR_EXPLANATION", "PLANNING_OR_OPERATIONS", "OTHER_IN_SCOPE"],
+        ),
+        "task_types": [
+            "ASK_EXPLAIN",
+            "LEARN_OR_STUDY",
+            "DRAFT_OR_WRITE",
+            "DEBUG_OR_FIX",
+            "ANALYZE_OR_COMPARE",
+            "PLAN_OR_DECIDE",
+            "SUMMARIZE_OR_SYNTHESIZE",
+            "GENERATE_ARTIFACT",
+            "REVIEW_OR_VERIFY",
+            "SEARCH_OR_RESEARCH",
+            "AUTOMATE_OR_EXECUTE",
+            "OTHER_IN_SCOPE",
+        ],
+        "ai_roles": [
+            "TUTOR",
+            "ASSISTANT",
+            "ANALYST",
+            "DRAFTER",
+            "REVIEWER",
+            "DEBUGGER",
+            "PLANNER",
+            "SEARCH_SYNTHESIZER",
+            "AGENT_EXECUTOR",
+            "CRITIC",
+        ],
+        "artifact_types": [
+            "NONE",
+            "EXPLANATION",
+            "TEXT_DRAFT",
+            "CODE_OR_SCRIPT",
+            "DATA_TABLE",
+            "PLAN_OR_CHECKLIST",
+            "DECISION_NOTE",
+            "REVIEW_NOTES",
+            "MIXED",
+        ],
+        "human_value_sources": [
+            "PROBLEM_FRAMING",
+            "CONTEXT_SELECTION",
+            "DOMAIN_JUDGMENT",
+            "VERIFICATION",
+            "TASTE_OR_PREFERENCE",
+            "STAKEHOLDER_CONTEXT",
+            "RISK_OWNERSHIP",
+            "LEARNING_CAPITAL",
+        ],
+        "value_mechanisms": [
+            "TIME_SAVING",
+            "QUALITY_IMPROVEMENT",
+            "UNBLOCKING",
+            "LEARNING_UPSKILLING",
+            "OPTION_GENERATION",
+            "RISK_REDUCTION",
+            "AUTOMATION",
+            "COORDINATION",
+        ],
+        "verification_types": [
+            "SOURCE_CHECK",
+            "RUN_OR_TEST_OUTPUT",
+            "NUMERICAL_RECALCULATION",
+            "DOMAIN_EXPERT_REVIEW",
+            "SECURITY_PRIVACY_REVIEW",
+            "STAKEHOLDER_REVIEW",
+            "NONE_LOW",
+            "UNKNOWN",
+        ],
+        "risk_domains": [
+            "CORRECTNESS",
+            "PRIVACY",
+            "SECURITY",
+            "LEGAL_FINANCIAL",
+            "MEDICAL_SAFETY",
+            "ACADEMIC_INTEGRITY",
+            "REPUTATION",
+            "NONE",
+        ],
+        "skill_levels": [
+            "NOVICE",
+            "LEARNER_OR_STUDENT",
+            "JUNIOR",
+            "MIDLEVEL",
+            "SENIOR_OR_EXPERT",
+            "MANAGER_OR_OWNER",
+            "NONE_UNCLEAR",
+        ],
+    }
+    admin = {
+        "domain_id": domain_id,
+        "generated": True,
+        "audit_request": user_request,
+        "sampled_messages_used": len(sampled_rows),
+        "inferred_terms": terms,
+        "pack": {domain_id: pack},
+        "review_status": "draft_needs_human_or_model_review",
+        "process_note": (
+            "This generated domain admin is a draft codebook. Before full labeling, inspect the terms, "
+            "tighten inclusion/exclusion boundaries, add or remove labels, then run validation."
+        ),
+    }
+    return domain_id, {domain_id: pack}, admin
+
+
+def domain_admin_markdown(admin: dict[str, Any]) -> str:
+    domain_id = admin["domain_id"]
+    pack = admin["pack"][domain_id]
+    terms = ", ".join(admin.get("inferred_terms") or ["none"])
+
+    def bullet(values: list[str]) -> str:
+        return "\n".join(f"- `{value}`" for value in values)
+
+    return f"""# Domain Admin: `{domain_id}`
+
+This file is the audit-specific domain admin for this user and this dataset. It replaces bundled domain packs.
+
+## Audit Request
+
+> {admin.get("audit_request", "").strip() or "No audit request provided."}
+
+## How This Draft Was Built
+
+1. Normalize the exported chat data into message-level rows.
+2. Sample messages using the requested cost controls.
+3. Extract repeated terms from the audit request, conversation titles, and sampled message text.
+4. Generate a first-pass domain ID, inclusion keywords, task labels, value labels, risk labels, and verification labels.
+5. Save the editable codebook in `domain_admin.json`.
+6. Ask a human or model reviewer to refine this file before full labeling.
+
+Sampled messages used for this draft: **{admin.get("sampled_messages_used", 0)}**
+
+Inferred terms: {terms}
+
+## Required Review Before Full Labeling
+
+Check these items before sending batches to reviewers:
+
+- The domain ID clearly names the user's actual audit lens.
+- `selection_keywords` capture the user's context without being too broad.
+- `work_domains` describe the user's world, not a generic industry list.
+- `task_types` distinguish the behaviors you actually want to measure.
+- `exclusion_labels` remove medical, personal, legal, account, or unrelated content when needed.
+- `human_value_sources` reflect the scarce human inputs you care about.
+- `verification_types` describe how outputs should be checked in this domain.
+- Sensitive categories are marked so evidence can be paraphrased safely.
+
+## Generated Description
+
+{pack.get("description", "")}
+
+## Selection Keywords
+
+{bullet(pack.get("selection_keywords", []))}
+
+## Work Domains
+
+{bullet(pack.get("work_domains", []))}
+
+## Task Types
+
+{bullet(pack.get("task_types", []))}
+
+## AI Roles
+
+{bullet(pack.get("ai_roles", []))}
+
+## Human Value Sources
+
+{bullet(pack.get("human_value_sources", []))}
+
+## Value Mechanisms
+
+{bullet(pack.get("value_mechanisms", []))}
+
+## Verification Types
+
+{bullet(pack.get("verification_types", []))}
+
+## Risk Domains
+
+{bullet(pack.get("risk_domains", []))}
+
+## Edit Rule
+
+If this domain admin feels generic, edit it before labeling. The goal is not to fit the user into Chatologist's categories. The goal is to make categories that fit the user's real AI usage.
+"""
 
 
 def sample_messages(
@@ -612,11 +877,11 @@ def baseline_label(row: dict[str, str], domain_name: str, domain_pack: dict[str,
             break
     if task == "OTHER":
         if any(w in haystack for w in ["explain", "learn", "why", "how"]):
-            task = "LEARN_EXPLAIN" if "LEARN_EXPLAIN" in domain_pack.get("task_types", []) else domain_pack.get("task_types", ["OTHER"])[0]
+            task = "ASK_EXPLAIN" if "ASK_EXPLAIN" in domain_pack.get("task_types", []) else domain_pack.get("task_types", ["OTHER"])[0]
         elif any(w in haystack for w in ["debug", "error", "fix"]):
-            task = "DEBUG_DIAGNOSE" if "DEBUG_DIAGNOSE" in domain_pack.get("task_types", []) else domain_pack.get("task_types", ["OTHER"])[0]
+            task = "DEBUG_OR_FIX" if "DEBUG_OR_FIX" in domain_pack.get("task_types", []) else domain_pack.get("task_types", ["OTHER"])[0]
         elif any(w in haystack for w in ["write", "draft", "summarize"]):
-            task = "DOCUMENT_WRITE" if "DOCUMENT_WRITE" in domain_pack.get("task_types", []) else domain_pack.get("task_types", ["OTHER"])[0]
+            task = "DRAFT_OR_WRITE" if "DRAFT_OR_WRITE" in domain_pack.get("task_types", []) else domain_pack.get("task_types", ["OTHER"])[0]
     role = "TUTOR" if any(w in haystack for w in ["explain", "learn", "how"]) else (domain_pack.get("ai_roles", ["OTHER"])[0])
     if row.get("author") == "user":
         function = "REQUEST"

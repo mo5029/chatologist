@@ -11,15 +11,16 @@ from ai_work_audit_lib import iter_jsonl_files, load_domain_packs, read_jsonl, v
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate label JSONL files against the selected domain pack.")
+    parser = argparse.ArgumentParser(description="Validate label JSONL files against the generated domain admin.")
     parser.add_argument("--labels", required=True, help="JSONL file or directory of JSONL files.")
     parser.add_argument("--domain", required=True)
+    parser.add_argument("--domain-admin", help="Generated domain_admin.json for this audit.")
     parser.add_argument("--output", help="Optional JSON validation report path.")
     args = parser.parse_args()
 
-    packs = load_domain_packs()
+    packs = load_domain_packs(Path(args.domain_admin) if args.domain_admin else None)
     if args.domain not in packs:
-        raise SystemExit(f"Unknown domain pack: {args.domain}")
+        raise SystemExit(f"Unknown domain admin ID: {args.domain}")
 
     all_errors: list[str] = []
     file_counts = {}

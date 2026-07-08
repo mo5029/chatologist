@@ -19,7 +19,7 @@ Large chat histories can drain tokens. Always confirm or infer a sampling plan:
 - `--sample-percent 100` labels all messages.
 - `--max-messages N` adds a hard cap after percentage sampling.
 
-For first pass audits, prefer 5-15% unless the user explicitly requests full coverage.
+For first-pass audits, prefer 5-15% unless the user explicitly requests full coverage.
 
 ## Standard Commands
 
@@ -31,39 +31,69 @@ python scripts/ingest_chat_export.py \
   --output-dir audit_output/normalized
 ```
 
-### 2. Select Domain Pack
+### 2. Build Domain Admin
 
 ```bash
-python scripts/select_domain_pack.py \
-  --audit-request "Audit how I use AI for finance work" \
-  --domain auto \
-  --output-dir audit_output/setup
+python scripts/build_domain_admin.py \
+  --messages-csv audit_output/normalized/messages.csv \
+  --output-dir audit_output/setup \
+  --audit-request "Audit how I use AI for work, learning, value creation, and verification burden" \
+  --admin-sample-percent 15 \
+  --admin-min-messages 25 \
+  --admin-max-messages 200
 ```
 
-Treat this output as a suggestion. The active AI model should override it when the user's request clearly implies another pack or a custom pack.
+Review:
+
+```text
+audit_output/setup/domain_admin.md
+audit_output/setup/domain_admin.json
+```
+
+Edit `domain_admin.json` before full labeling if the generated categories do not fit the user's real context.
 
 ### 3. Batch
 
 ```bash
+DOMAIN_ID=$(python - <<'PY'
+import json
+print(json.load(open("audit_output/setup/domain_selection.json"))["selected_domain_pack"])
+PY
+)
+
 python scripts/make_batches.py \
   --messages-csv audit_output/normalized/messages.csv \
   --output-dir audit_output/setup \
-  --domain finance \
-  --user-audit-request "Audit how I use AI for finance work" \
+  --domain "$DOMAIN_ID" \
+  --domain-admin audit_output/setup/domain_admin.json \
+  --user-audit-request "Audit how I use AI for work, learning, value creation, and verification burden" \
   --sample-percent 10 \
   --batch-size 40
 ```
 
 ### 4. Label
 
-Send `audit_output/setup/labeling_instructions.md` and batch files to model/agent reviewers. Save their JSONL outputs into `audit_output/labels/`.
+Send these files to model/agent reviewers:
+
+```text
+audit_output/setup/domain_admin.md
+audit_output/setup/labeling_instructions.md
+audit_output/setup/batches/*.jsonl
+```
+
+Save reviewer outputs into:
+
+```text
+audit_output/labels/
+```
 
 For a demo only:
 
 ```bash
 python scripts/baseline_label.py \
   --batches audit_output/setup/batches \
-  --domain finance \
+  --domain "$DOMAIN_ID" \
+  --domain-admin audit_output/setup/domain_admin.json \
   --output-dir audit_output/labels
 ```
 
@@ -72,7 +102,8 @@ python scripts/baseline_label.py \
 ```bash
 python scripts/validate_labels.py \
   --labels audit_output/labels \
-  --domain finance \
+  --domain "$DOMAIN_ID" \
+  --domain-admin audit_output/setup/domain_admin.json \
   --output audit_output/report/label_validation.json
 ```
 
@@ -81,7 +112,8 @@ python scripts/validate_labels.py \
 ```bash
 python scripts/aggregate_results.py \
   --labels audit_output/labels \
-  --domain finance \
+  --domain "$DOMAIN_ID" \
+  --domain-admin audit_output/setup/domain_admin.json \
   --output-dir audit_output/report
 ```
 
@@ -107,8 +139,7 @@ python scripts/privacy_scan.py \
 python scripts/run_pipeline.py \
   --input examples/sample_openai_export/conversations.json \
   --output-dir tmp/sample \
-  --audit-request "Audit engineering student AI use" \
-  --domain auto \
+  --audit-request "Audit student learning and technical problem-solving with AI" \
   --sample-percent 100 \
   --baseline-label
 ```
@@ -118,7 +149,7 @@ python scripts/run_pipeline.py \
 A complete audit has:
 
 - normalized messages;
-- selected or custom domain pack;
+- generated and reviewed domain admin;
 - sampled batch manifest;
 - model/agent label files;
 - validation report with zero errors;

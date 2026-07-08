@@ -1,0 +1,113 @@
+{
+  "custom-user-domain-template": {
+    "description": "Neutral template used only when a generated domain admin is not supplied. Real audits should use setup/domain_admin.json generated from the user's request and message sample.",
+    "selection_keywords": [
+      "custom",
+      "audit",
+      "chat"
+    ],
+    "exclusion_labels": [
+      "PERSONAL_ADMIN",
+      "HEALTH_MEDICAL",
+      "LEGAL_OR_FINANCIAL_SENSITIVE",
+      "CREATIVE_LEISURE",
+      "TRAVEL_LOGISTICS",
+      "ACCOUNT_META",
+      "OTHER_OUT_OF_SCOPE",
+      "INSUFFICIENT_CONTEXT"
+    ],
+    "work_domains": [
+      "PRIMARY_WORK",
+      "ADJACENT_WORK",
+      "LEARNING_OR_EXPLANATION",
+      "PLANNING_OR_OPERATIONS",
+      "OTHER_IN_SCOPE"
+    ],
+    "task_types": [
+      "ASK_EXPLAIN",
+      "LEARN_OR_STUDY",
+      "DRAFT_OR_WRITE",
+      "DEBUG_OR_FIX",
+      "ANALYZE_OR_COMPARE",
+      "PLAN_OR_DECIDE",
+      "SUMMARIZE_OR_SYNTHESIZE",
+      "GENERATE_ARTIFACT",
+      "REVIEW_OR_VERIFY",
+      "SEARCH_OR_RESEARCH",
+      "AUTOMATE_OR_EXECUTE",
+      "OTHER_IN_SCOPE"
+    ],
+    "ai_roles": [
+      "TUTOR",
+      "ASSISTANT",
+      "ANALYST",
+      "DRAFTER",
+      "REVIEWER",
+      "DEBUGGER",
+      "PLANNER",
+      "SEARCH_SYNTHESIZER",
+      "AGENT_EXECUTOR",
+      "CRITIC"
+    ],
+    "artifact_types": [
+      "NONE",
+      "EXPLANATION",
+      "TEXT_DRAFT",
+      "CODE_OR_SCRIPT",
+      "DATA_TABLE",
+      "PLAN_OR_CHECKLIST",
+      "DECISION_NOTE",
+      "REVIEW_NOTES",
+      "MIXED"
+    ],
+    "human_value_sources": [
+      "PROBLEM_FRAMING",
+      "CONTEXT_SELECTION",
+      "DOMAIN_JUDGMENT",
+      "VERIFICATION",
+      "TASTE_OR_PREFERENCE",
+      "STAKEHOLDER_CONTEXT",
+      "RISK_OWNERSHIP",
+      "LEARNING_CAPITAL"
+    ],
+    "value_mechanisms": [
+      "TIME_SAVING",
+      "QUALITY_IMPROVEMENT",
+      "UNBLOCKING",
+      "LEARNING_UPSKILLING",
+      "OPTION_GENERATION",
+      "RISK_REDUCTION",
+      "AUTOMATION",
+      "COORDINATION"
+    ],
+    "verification_types": [
+      "SOURCE_CHECK",
+      "RUN_OR_TEST_OUTPUT",
+      "NUMERICAL_RECALCULATION",
+      "DOMAIN_EXPERT_REVIEW",
+      "SECURITY_PRIVACY_REVIEW",
+      "STAKEHOLDER_REVIEW",
+      "NONE_LOW",
+      "UNKNOWN"
+    ],
+    "risk_domains": [
+      "CORRECTNESS",
+      "PRIVACY",
+      "SECURITY",
+      "LEGAL_FINANCIAL",
+      "MEDICAL_SAFETY",
+      "ACADEMIC_INTEGRITY",
+      "REPUTATION",
+      "NONE"
+    ],
+    "skill_levels": [
+      "NOVICE",
+      "LEARNER_OR_STUDENT",
+      "JUNIOR",
+      "MIDLEVEL",
+      "SENIOR_OR_EXPERT",
+      "MANAGER_OR_OWNER",
+      "NONE_UNCLEAR"
+    ]
+  }
+}

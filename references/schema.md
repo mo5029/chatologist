@@ -2,18 +2,20 @@
 
 Each output label is one JSON object per input message.
 
+Allowed values come from the generated `setup/domain_admin.json` plus the universal schema rules below.
+
 ## Required Fields
 
 | Field | Meaning |
 | --- | --- |
 | `message_uid` | Stable ID from normalized messages. |
-| `domain_pack` | Selected domain pack. |
+| `domain_pack` | Generated domain admin ID. Kept as `domain_pack` for backward compatibility. |
 | `message_scope` | `IN_SCOPE`, `DOMAIN_ADJACENT`, `OUT_OF_SCOPE`, `UNREADABLE_OR_EMPTY`, or `DUPLICATE`. |
 | `exclusion_label` | Reason for exclusion, or `NA_IN_SCOPE`. |
 | `message_author` | `user`, `assistant`, `system`, `tool`, or `unknown`. |
 | `message_function` | What the message does: request, answer, correction, artifact, etc. |
-| `work_domain` | Domain-specific work area. |
-| `task_type` | Domain-specific task type. |
+| `work_domain` | Domain-admin-specific work or learning area. |
+| `task_type` | Domain-admin-specific task type. |
 | `ai_role` | Role the AI is playing or being asked to play. |
 | `artifact_type` | Main output artifact. |
 | `human_value_visible` | Human-side contribution visible in the message or immediate context. |
@@ -37,7 +39,7 @@ Each output label is one JSON object per input message.
 | `PARTIAL_SUBSTITUTION` | AI performs a bounded task that a human would otherwise do, but still needs review or integration. |
 | `SUBSTITUTION_LIKE` | AI produces an end-to-end, low-risk deliverable with little visible human contribution. Use rarely. |
 | `SUPERVISION_HEAVY` | AI output may help, but only under substantial oversight. |
-| `OUT_OF_SCOPE` | Outside the selected domain. |
+| `OUT_OF_SCOPE` | Outside the generated domain admin. |
 | `UNCLEAR` | Not enough context. |
 
 ## Scope Rule
