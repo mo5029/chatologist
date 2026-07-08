@@ -1,0 +1,42 @@
+[
+  {
+    "id": "sample_openai_engineering",
+    "title": "Debug MATLAB plot",
+    "mapping": {
+      "node1": {
+        "message": {
+          "author": {"role": "user"},
+          "create_time": 1783500000,
+          "content": {"content_type": "text", "parts": ["I am an engineering student. Can you help debug this MATLAB plot? The legend overlaps the graph."]}
+        }
+      },
+      "node2": {
+        "message": {
+          "author": {"role": "assistant"},
+          "create_time": 1783500001,
+          "content": {"content_type": "text", "parts": ["Use tiledlayout or move the legend outside the axes. Run the script again to verify the rendered output."]}
+        }
+      },
+      "node3": {
+        "message": {
+          "author": {"role": "user"},
+          "create_time": 1783500002,
+          "content": {"content_type": "text", "parts": ["Now explain why my low-pass filter response drops after the cutoff frequency."]}
+        }
+      }
+    }
+  },
+  {
+    "id": "sample_openai_personal",
+    "title": "Weekend plan",
+    "mapping": {
+      "node1": {
+        "message": {
+          "author": {"role": "user"},
+          "create_time": 1783500003,
+          "content": {"content_type": "text", "parts": ["Plan a relaxed weekend trip with two cafes and a museum."]}
+        }
+      }
+    }
+  }
+]

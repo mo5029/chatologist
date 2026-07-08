@@ -1,0 +1,12 @@
+[project]
+name = "chatologist"
+version = "0.1.0"
+description = "Local-first Codex and Claude Code skill for auditing AI chat exports into evidence about usage, value, automation, and human judgment."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Mohamed Ibrahim"}]
+
+[tool.chatologist]
+stdlib_only = true
+supports = ["codex", "claude-code"]

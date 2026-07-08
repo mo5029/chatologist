@@ -1,0 +1,28 @@
+<svg width="1200" height="420" viewBox="0 0 1200 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Chatologist hero</title>
+  <desc id="desc">A visual summary of Chatologist converting AI chats into evidence about usage, value, and automation.</desc>
+  <rect width="1200" height="420" fill="#111827"/>
+  <path d="M0 330 C190 285 295 382 480 326 C685 264 810 228 1200 272 L1200 420 L0 420 Z" fill="#0F766E" opacity="0.45"/>
+  <path d="M0 80 C190 132 315 20 520 76 C730 133 910 87 1200 38 L1200 0 L0 0 Z" fill="#2563EB" opacity="0.34"/>
+  <rect x="64" y="62" width="496" height="296" rx="24" fill="#F9FAFB"/>
+  <rect x="92" y="94" width="310" height="28" rx="14" fill="#DBEAFE"/>
+  <rect x="92" y="144" width="420" height="54" rx="14" fill="#E0F2FE"/>
+  <rect x="92" y="214" width="360" height="54" rx="14" fill="#CCFBF1"/>
+  <rect x="92" y="284" width="250" height="28" rx="14" fill="#FEF3C7"/>
+  <circle cx="526" cy="94" r="12" fill="#2563EB"/>
+  <circle cx="526" cy="144" r="12" fill="#0F766E"/>
+  <circle cx="526" cy="194" r="12" fill="#D97706"/>
+  <path d="M606 210 H692" stroke="#F9FAFB" stroke-width="8" stroke-linecap="round"/>
+  <path d="M670 178 L710 210 L670 242" stroke="#F9FAFB" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="748" y="62" width="388" height="296" rx="24" fill="#FFFFFF"/>
+  <text x="792" y="130" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800">Chatologist</text>
+  <text x="792" y="176" fill="#374151" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Turn AI chats into evidence.</text>
+  <text x="792" y="222" fill="#4B5563" font-family="Inter, Arial, sans-serif" font-size="18">Figure out what you, your company,</text>
+  <text x="792" y="250" fill="#4B5563" font-family="Inter, Arial, sans-serif" font-size="18">or your family are using AI for.</text>
+  <rect x="792" y="286" width="95" height="34" rx="17" fill="#DBEAFE"/>
+  <rect x="900" y="286" width="80" height="34" rx="17" fill="#CCFBF1"/>
+  <rect x="993" y="286" width="94" height="34" rx="17" fill="#FEF3C7"/>
+  <text x="812" y="309" fill="#1D4ED8" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">usage</text>
+  <text x="922" y="309" fill="#0F766E" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">value</text>
+  <text x="1011" y="309" fill="#92400E" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700">takeover</text>
+</svg>

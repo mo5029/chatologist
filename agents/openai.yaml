@@ -1,0 +1,7 @@
+interface:
+  display_name: "Chatologist"
+  short_description: "Map AI chats into usage, value, and automation evidence"
+  default_prompt: "Use $chatologist to figure out what my exported AI chats show about usage, value, automation, and human judgment."
+
+policy:
+  allow_implicit_invocation: true

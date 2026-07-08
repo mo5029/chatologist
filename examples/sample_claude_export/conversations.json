@@ -1,0 +1,29 @@
+[
+  {
+    "uuid": "sample_claude_finance",
+    "name": "Revenue forecast review",
+    "chat_messages": [
+      {
+        "sender": "human",
+        "created_at": "2026-07-08T10:00:00Z",
+        "text": "I work in finance. Review these assumptions for a revenue forecast and tell me what needs source checking."
+      },
+      {
+        "sender": "assistant",
+        "created_at": "2026-07-08T10:00:05Z",
+        "text": "Check customer growth, churn, pricing, seasonality, and whether the spreadsheet formulas reconcile to the source data."
+      }
+    ]
+  },
+  {
+    "uuid": "sample_claude_education",
+    "name": "Lesson feedback",
+    "chat_messages": [
+      {
+        "sender": "human",
+        "created_at": "2026-07-08T11:00:00Z",
+        "text": "As a teacher, help me make a rubric for a student essay and flag where feedback should be age appropriate."
+      }
+    ]
+  }
+]
