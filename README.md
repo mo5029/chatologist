@@ -277,4 +277,4 @@ See [FRIEND_TESTING.md](FRIEND_TESTING.md) for a short checklist to send to earl
 
 ## License
 
-MIT.
+MIT. In plain English: people can use, copy, modify, share, and commercially use Chatologist as long as they keep the license notice. The software is provided as-is, without warranty. See [LICENSE](LICENSE) for the full legal text.
