@@ -36,29 +36,33 @@ Baseline labels prove the pipeline runs. They are not research-grade labels. For
 
 ## Required Workflow
 
-1. Clarify the user's audit request and cost limit.
+1. If the user does not already have an export, explain how to get one.
+   - ChatGPT: profile menu -> `Settings` -> `Data controls` -> `Export data`.
+   - Claude: web app or Claude Desktop -> initials -> `Settings` -> `Privacy` -> `Export data`.
+   - Never scrape live accounts or sidebars.
+2. Clarify the user's audit request and cost limit.
    - If they specify "only check X%", pass `--sample-percent X`.
    - If they specify a hard cap, pass `--max-messages N`.
    - Default to a small sample first when exports are large.
-2. Ingest only user-provided data.
+3. Ingest only user-provided data.
    - Use `scripts/ingest_chat_export.py`.
-3. Build a user-specific domain admin.
+4. Build a user-specific domain admin.
    - Use `scripts/build_domain_admin.py` or the one-command pipeline.
    - Review `setup/domain_admin.md`.
    - Edit `setup/domain_admin.json` if labels are too generic, too narrow, or missing the user's real context.
-4. Create sampled batches and labeling instructions.
+5. Create sampled batches and labeling instructions.
    - Use `scripts/make_batches.py`.
    - Pass `--domain-admin setup/domain_admin.json`.
-5. Run multi-agent or multi-pass model labeling.
+6. Run multi-agent or multi-pass model labeling.
    - Give reviewers `setup/domain_admin.md`, `setup/labeling_instructions.md`, and one or more `setup/batches/*.jsonl`.
    - Require one JSON object per input message.
-6. Validate labels.
+7. Validate labels.
    - Use `scripts/validate_labels.py` with `--domain-admin setup/domain_admin.json`.
-7. Aggregate results.
+8. Aggregate results.
    - Use `scripts/aggregate_results.py` with `--domain-admin setup/domain_admin.json`.
-8. Export an anonymized evidence table.
+9. Export an anonymized evidence table.
    - Use `scripts/export_evidence_table.py`.
-9. Run privacy scan before sharing.
+10. Run privacy scan before sharing.
    - Use `scripts/privacy_scan.py`.
 
 ## Domain Admin Rule

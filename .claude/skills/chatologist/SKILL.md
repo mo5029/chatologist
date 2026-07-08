@@ -36,16 +36,19 @@ python scripts/run_pipeline.py \
 
 ## Required Process
 
-1. Respect `--sample-percent` and `--max-messages` to control token cost.
-2. Ingest only data the user exports and provides.
-3. Build a generated domain admin with `scripts/build_domain_admin.py` or `scripts/run_pipeline.py`.
-4. Review `setup/domain_admin.md` and refine `setup/domain_admin.json` before serious labeling.
-5. Generate batches with `scripts/make_batches.py`, passing the generated `--domain-admin`.
-6. Have one or more model/agent reviewers label each batch.
-7. Validate with `scripts/validate_labels.py`.
-8. Aggregate with `scripts/aggregate_results.py`.
-9. Export evidence with `scripts/export_evidence_table.py`.
-10. Scan outputs with `scripts/privacy_scan.py` before sharing.
+1. If needed, explain how to export data.
+   - ChatGPT: profile menu -> `Settings` -> `Data controls` -> `Export data`.
+   - Claude: web app or Claude Desktop -> initials -> `Settings` -> `Privacy` -> `Export data`.
+2. Respect `--sample-percent` and `--max-messages` to control token cost.
+3. Ingest only data the user exports and provides.
+4. Build a generated domain admin with `scripts/build_domain_admin.py` or `scripts/run_pipeline.py`.
+5. Review `setup/domain_admin.md` and refine `setup/domain_admin.json` before serious labeling.
+6. Generate batches with `scripts/make_batches.py`, passing the generated `--domain-admin`.
+7. Have one or more model/agent reviewers label each batch.
+8. Validate with `scripts/validate_labels.py`.
+9. Aggregate with `scripts/aggregate_results.py`.
+10. Export evidence with `scripts/export_evidence_table.py`.
+11. Scan outputs with `scripts/privacy_scan.py` before sharing.
 
 ## References
 

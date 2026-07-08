@@ -6,6 +6,14 @@ Chatologist turns an exported LLM chat history into structured evidence about wh
 
 It now builds a custom **domain admin** for each tester. That means the test should not look for a fixed built-in domain. It should check whether the generated codebook makes sense for the request.
 
+## Export Your Own Data
+
+For ChatGPT, use the official export flow: profile menu -> `Settings` -> `Data controls` -> `Export data` -> confirm. OpenAI sends a download link by email or SMS when the export is ready. The ZIP can be used directly as `--input`.
+
+For Claude, use the web app or Claude Desktop: initials in the lower-left corner -> `Settings` -> `Privacy` -> `Export data`. Claude sends the download link by email when the export is ready. The ZIP or extracted folder can be used as `--input`.
+
+Do not send private exports to anyone else unless you have reviewed them. Test locally first.
+
 ## 5 Minute Smoke Test
 
 From the unzipped folder:

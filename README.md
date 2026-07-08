@@ -90,6 +90,57 @@ This repo includes:
 
 Use it as a project skill by keeping `.claude/skills/chatologist` in the repo. The wrapper expects the scripts and references to remain in the repository root.
 
+## Get Your Chat Export
+
+Chatologist works from files you export yourself. It does not log into your account, scrape the sidebar, or read live chats.
+
+### ChatGPT
+
+Official guide: [Exporting your ChatGPT history and data](https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data).
+
+1. Sign in to ChatGPT.
+2. Open your profile menu.
+3. Go to `Settings`.
+4. Open `Data controls`.
+5. Under `Export data`, select `Export`.
+6. Confirm the export.
+7. Wait for the email or SMS from OpenAI, then download the ZIP while signed in to the same account.
+
+OpenAI says exports can take up to 7 days to arrive and the download link expires 24 hours after delivery. The ZIP includes chat history plus other relevant account data. Chatologist can read the ZIP directly:
+
+```bash
+python3 scripts/run_pipeline.py \
+  --input /path/to/chatgpt-export.zip \
+  --output-dir audit_output \
+  --audit-request "Audit how I use AI for my work or studies" \
+  --sample-percent 10
+```
+
+You can also unzip it and point Chatologist at the extracted folder or `conversations.json`.
+
+### Claude
+
+Official guide: [Export your Claude data](https://support.claude.com/en/articles/9450526-export-your-claude-data).
+
+1. Open Claude on the web app or Claude Desktop.
+2. Click your initials in the lower-left corner.
+3. Select `Settings`.
+4. Go to `Privacy`.
+5. Click `Export data`.
+6. Wait for the email from Claude, then download the export while signed in.
+
+Claude notes that individual exports are available for Free, Pro, and Max users with active accounts. Team or Enterprise exports are handled by the organization's Primary Owner. Claude export links expire 24 hours after delivery.
+
+Use the downloaded ZIP or extracted JSON folder as `--input`:
+
+```bash
+python3 scripts/run_pipeline.py \
+  --input /path/to/claude-export.zip \
+  --output-dir audit_output \
+  --audit-request "Audit how I use AI for my work or studies" \
+  --sample-percent 10
+```
+
 ## 5 Minute Smoke Test
 
 ```bash

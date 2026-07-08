@@ -10,6 +10,48 @@ The user must provide an exported chat archive:
 
 Do not scrape browser sidebars, account pages, inboxes, or live chats.
 
+## Exporting Data
+
+Chatologist starts from a user-provided export file. If the user has not exported data yet, guide them through the official export flow.
+
+### ChatGPT Export
+
+Official guide: https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data
+
+1. Sign in to ChatGPT.
+2. Open the profile menu.
+3. Select `Settings`.
+4. Select `Data controls`.
+5. Under `Export data`, select `Export`.
+6. Confirm the export.
+7. Download the ZIP from the email or SMS when it arrives.
+
+Notes:
+
+- OpenAI says exports can take up to 7 days.
+- The download link expires 24 hours after delivery.
+- The user should download while signed in to the same account.
+- The ZIP can be passed directly to `--input`, or unzipped and supplied as a folder or `conversations.json`.
+
+### Claude Export
+
+Official guide: https://support.claude.com/en/articles/9450526-export-your-claude-data
+
+1. Open Claude on the web app or Claude Desktop.
+2. Click the initials in the lower-left corner.
+3. Select `Settings`.
+4. Navigate to `Privacy`.
+5. Click `Export data`.
+6. Download the export from the email when it arrives.
+
+Notes:
+
+- Individual exports are available for Free, Pro, and Max users with active accounts.
+- Team or Enterprise exports are handled by the organization's Primary Owner.
+- Claude export links expire 24 hours after delivery.
+- Claude mobile apps cannot start the export flow.
+- The downloaded ZIP or extracted JSON folder can be passed to `--input`.
+
 ## Cost Control
 
 Large chat histories can drain tokens. Always confirm or infer a sampling plan:
