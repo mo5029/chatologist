@@ -84,16 +84,13 @@ The scripts use Python stdlib modules only:
 
 ## Uninstall
 
-Remove the copied skill folder:
+Use your skill manager or file manager to remove only the copied
+`chatologist` skill folder. Before deleting anything, verify that the selected
+folder is the Chatologist copy and not the parent skills directory.
 
-```bash
-rm -rf ~/.codex/skills/chatologist
-```
-
-Delete any local output directories you created:
-
-```bash
-rm -rf audit_output tmp/sample_student
-```
+Audit outputs are ordinary local folders. If you no longer need them, review
+their contents and remove only the specific output folders you created, such
+as `audit_output` or `tmp/sample_student`, using your file manager. Chatologist
+never deletes files or directories automatically.
 
 Chatologist does not create accounts, servers, background services, or global config outside whichever skill copy you make.

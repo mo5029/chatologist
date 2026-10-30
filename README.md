@@ -12,10 +12,9 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/mo5029/chatologist?style=flat" alt="License"></a>
-  <a href="SECURITY.md"><img src="https://img.shields.io/badge/security-policy-brightgreen?style=flat" alt="Security policy"></a>
-  <a href="INSTALL.md"><img src="https://img.shields.io/badge/works_with-Codex%20%2B%20Claude%20Code-blue?style=flat" alt="Works with Codex and Claude Code"></a>
-  <a href="https://github.com/mo5029/chatologist/commits/main"><img src="https://img.shields.io/github/last-commit/mo5029/chatologist?style=flat" alt="Last commit"></a>
+  <a href="LICENSE">MIT License</a> ·
+  <a href="SECURITY.md">Security policy</a> ·
+  <a href="INSTALL.md">Codex + Claude Code</a>
 </p>
 
 <p align="center">
@@ -242,6 +241,12 @@ audit_output/
 ## Security & privacy
 
 Chatologist has no telemetry, no backend, and no account login flow. Runtime scripts read local files and write local outputs. Nothing is uploaded by Chatologist.
+
+Chatologist's runtime requires no network access. The links to the official
+ChatGPT and Claude export guides above are documentation for users to open
+manually; the skill and its scripts never contact those endpoints. Optional
+external model labeling is outside the local pipeline and must not receive
+chat data without the user's explicit approval.
 
 Important rules:
 

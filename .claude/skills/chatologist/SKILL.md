@@ -11,6 +11,17 @@ Turn a user-provided LLM chat export into a structured audit: what the user asks
 
 Never scrape a user's account. Require the user to provide an export ZIP, JSON, JSONL, or extracted export directory from OpenAI/ChatGPT, Anthropic/Claude, or another source.
 
+## Network Policy
+
+Chatologist requires no runtime network access. Do not make outbound network
+requests or run remote installers. Work only with local files the user
+explicitly provides. Documentation may point the user to official vendor
+export guides, but the skill must not contact those endpoints itself.
+
+External model or agent labeling is optional. Never upload chat content or
+derived evidence to an external service unless the user explicitly chooses
+that service and approves the specific data transfer.
+
 ## Quick Start
 
 ```bash
